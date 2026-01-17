@@ -197,6 +197,7 @@ async function loadAthletes(id) {
     });
 }
 
+// Training Tab
 loadAthletes("athlete-select");
 
 document.getElementById("athlete-select").addEventListener("change", async function () {
@@ -332,11 +333,18 @@ document.getElementById("athlete-select").addEventListener("change", async funct
     });
 });
 
+// Medical Tab
 loadAthletes("athlete-select-medical")
 
 document.getElementById("athlete-select-medical").addEventListener("change", async function () {
     const athleteId = this.value;
     const tbody = document.querySelector("#measurementTable-medical tbody");
+
+    if (athleteId) {
+        document.getElementById("measurements-medical").classList.remove("hidden");
+    } else {
+        document.getElementById("measurements-medical").classList.add("hidden");
+    }
 
     tbody.innerHTML = "";
 
@@ -349,7 +357,7 @@ document.getElementById("athlete-select-medical").addEventListener("change", asy
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
-            <td>${row.measurement_date}</td>
+            <td>${row.measurement_date.split(":")[0].slice(0, -3)}</td>
             <td>${row.height}</td>
             <td>${row.weight}</td>
             <td>${row.body_fat_percentage}</td>

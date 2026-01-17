@@ -182,8 +182,7 @@
                 </table>
                 </div>
             </div>
-                </div>
-                
+            </div>
 
             <div id="content-management" class="tab-content hidden">
                 <h3>Training Program Management</h3>
@@ -218,60 +217,62 @@
                 <select id="athlete-select-medical">
                     <option value="">Select an athlete</option>
                 </select>
-
-                <label>Body Measurements</label>
-                <div class="table-container">
-                    <table border="1" id="measurementTable-medical">
+                
+                <div id="measurements-medical" class="hidden">
+                    <label>Body Measurements</label>
+                    <div class="table-container">
+                        <table border="1" id="measurementTable-medical">
+                        <thead>
+                            <tr>
+                            <th>Date</th>
+                            <th>Height</th>
+                            <th>Weight</th>
+                            <th>Body Fat %</th>
+                            <th>Muscle Mass</th>
+                            <th>BMI</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        </table>
+                    </div>
+                    <br/>
+                    <label>Medical Assessment</label>
+                    <div class="table-container">
+                    <table border="1" id="medicalAssessment-medical">
                     <thead>
                         <tr>
+                        <th>Doctor</th>
                         <th>Date</th>
-                        <th>Height</th>
-                        <th>Weight</th>
-                        <th>Body Fat %</th>
-                        <th>Muscle Mass</th>
-                        <th>BMI</th>
+                        <th>Type</th>
+                        <th>Notes</th>
+                        <th>Clearance</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                     </table>
+                    </div>
+                    <br/>
+                    <h3>New Medical Exam</h3>
+                    <label>Assessment Type:</label>
+                    <select id="assessment_type">
+                        <option value="Recovery Assessment">Recovery Assessment</option>
+                        <option value="Physical Examination">Physical Examination</option>
+                        <option value="Nutritional Consultation">Nutritional Consultation</option>
+                        <option value="Injury Assessment">Injury Assessment</option>
+                        <option value="Clearance Check">Clearance Check</option>
+                    </select>
+                    <label for="medical_exam_notes">Examination Notes</label>
+                    <br/>
+                    <textarea id="medical_exam_notes"></textarea>
+                    <br/>
+                    <label>Clearance Status</label>
+                    <select id="clearance_status">
+                        <option value="cleared">Cleared</option>
+                        <option value="not_cleared">Not Cleared</option>
+                        <option value="restricted">Restricted</option>
+                    </select>
+                    <button onclick="submitMedicalExam()">Submit Examination</button>
                 </div>
-                <br/>
-                <label>Medical Assessment</label>
-                <div class="table-container">
-                <table border="1" id="medicalAssessment-medical">
-                <thead>
-                    <tr>
-                    <th>Doctor</th>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Notes</th>
-                    <th>Clearance</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-                </table>
-                </div>
-                <br/>
-                <h3>New Medical Exam</h3>
-                <label>Assessment Type:</label>
-                <select id="assessment_type">
-                    <option value="Recovery Assessment">Recovery Assessment</option>
-                    <option value="Physical Examination">Physical Examination</option>
-                    <option value="Nutritional Consultation">Nutritional Consultation</option>
-                    <option value="Injury Assessment">Injury Assessment</option>
-                    <option value="Clearance Check">Clearance Check</option>
-                </select>
-                <label for="medical_exam_notes">Examination Notes</label>
-                <br/>
-                <textarea id="medical_exam_notes"></textarea>
-                <br/>
-                <label>Clearance Status</label>
-                <select id="clearance_status">
-                    <option value="cleared">Cleared</option>
-                    <option value="not_cleared">Not Cleared</option>
-                    <option value="restricted">Restricted</option>
-                </select>
-                <button onclick="submitMedicalExam()">Submit Examination</button>
             </div>
         </div>
     </div>
