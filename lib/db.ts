@@ -65,17 +65,21 @@ export function getPool(): mysql.Pool {
   return pool;
 }
 
+interface QueryResult {
+  insertId?: number;
+}
+
 /**
  * Execute a query with parameters.
  * Returns rows and fields from the query result.
  */
-export async function query<T = any>(
+export async function query<T = unknown>(
   sql: string,
-  params?: any[]
-): Promise<T[]> {
+  params?: unknown[]
+): Promise<T[] | QueryResult> {
   const pool = getPool();
   const [rows] = await pool.execute(sql, params);
-  return rows as T[];
+  return rows as T[] | QueryResult;
 }
 
 /**
@@ -89,4 +93,5 @@ export async function closePool(): Promise<void> {
   }
 }
 
-export default { getPool, query, closePool };
+const dbExports = { getPool, query, closePool };
+export default dbExports;

@@ -30,18 +30,23 @@ interface ProgramEnrollment {
   completion_status: string | null;
 }
 
+interface InsertResult {
+  insertId: number;
+  affectedRows: number;
+}
+
 // GET /api/trainingprograms
 export async function GET() {
   try {
     // Fetch all training programs ordered by program_id
     const programs = await query<TrainingProgram>(
       'SELECT * FROM trainingprogram ORDER BY program_id ASC'
-    );
+    ) as TrainingProgram[];
 
     // Fetch all program enrollments for enrichment
     const enrollments = await query<ProgramEnrollment>(
       'SELECT * FROM programenrollment'
-    );
+    ) as ProgramEnrollment[];
 
     // Group enrollments by program_id
     const enrollmentsByProgram = new Map<number, ProgramEnrollment[]>();
@@ -83,19 +88,19 @@ export async function POST(req: Request) {
     const created_by_trainer = body.created_by_trainer ?? null;
 
     // Insert the new training program
-    const result = await query<any>(
+    const result = await query(
       `INSERT INTO trainingprogram 
        (program_name, difficulty_level, goal, start_date, end_date, created_by_trainer) 
        VALUES (?, ?, ?, ?, ?, ?)`,
       [program_name, difficulty_level, goal, start_date, end_date, created_by_trainer]
-    );
+    ) as InsertResult;
 
     // Fetch the created record to return it (mimicking Prisma's behavior)
-    const insertId = (result as any).insertId;
+    const insertId = result.insertId;
     const created = await query<TrainingProgram>(
       'SELECT * FROM trainingprogram WHERE program_id = ?',
       [insertId]
-    );
+    ) as TrainingProgram[];
 
     if (created.length === 0) {
       throw new Error('Failed to retrieve created training program');
