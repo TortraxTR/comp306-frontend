@@ -17,15 +17,16 @@ def login():
     email = data["email"]
     user = get_user(email)
     if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
+        return jsonify({"error": "Email not found"}), 401
 
     password = data["password"].encode("utf-8")
     stored_hash = user["password_hash"]
+
     if isinstance(stored_hash, str):
         stored_hash = stored_hash.encode("utf-8")
 
     if not bcrypt.checkpw(password, stored_hash):
-        return jsonify({"error": "Invalid credentials"}), 401
+        return jsonify({"error": "Wrong password"}), 401
 
     user["role"] = get_role(user)
     user.pop("password_hash", None)

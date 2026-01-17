@@ -46,7 +46,7 @@ def format_value(val):
 def write_insert(output_file, table, columns, values_list):
     if not values_list:
         return
-    output_file.write(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ")
+    output_file.write(f"INSERT INTO {table} ({', '.join(columns)}) VALUES \n")
     
     for i, values in enumerate(values_list):
         formatted_values = ', '.join(format_value(v) for v in values)
@@ -333,9 +333,10 @@ def generate_medical_assessments(output_file, athlete_ids, medical_ids):
 def generate_trainer_feedback(output_file, trainer_ids, athlete_ids, session_ids):
     feedback_list = []
     keys = list(itertools.product(trainer_ids, athlete_ids, session_ids))
-    
-    for i in range(min(200, len(trainer_ids) * len(athlete_ids))):
-        trainer_id, athlete_id, session_id = random.choice(keys)
+    sample_size = min(200, len(keys))
+    selected_keys = random.sample(keys, sample_size)
+
+    for trainer_id, athlete_id, session_id in selected_keys:
         feedback = (
             trainer_id,
             athlete_id,
@@ -344,7 +345,7 @@ def generate_trainer_feedback(output_file, trainer_ids, athlete_ids, session_ids
             fake.text(max_nb_chars=200)
         )
         feedback_list.append(feedback)
-    
+
     write_insert(output_file, 'TrainerFeedback', ['trainer_id', 'athlete_id', 'session_id', 'rating', 'comments'], feedback_list)
 
 def main():
