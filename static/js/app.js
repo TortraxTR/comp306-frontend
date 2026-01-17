@@ -38,7 +38,7 @@ async function get_user(login_email, login_password) {
     });
 
     if (!result.ok) {
-        throw new Error("Login failed")
+        throw new Error("Login failed.")
     }
     return await result.json();
 }
@@ -62,8 +62,8 @@ loginForm.addEventListener('submit', async (e) => {
         toggleView('login-view');
         toggleView('dashboard-view');
         showDashboard(user.role);
-        //console.log("User from backend:", user);
-        //console.log("Role:", user.role);
+        console.log("User from backend:", user);
+        console.log("Role:", user.role);
 
     } catch (err) {
         window.alert("Login failed");
@@ -218,9 +218,8 @@ document.getElementById("athlete-select").addEventListener("change", async funct
 
     data.forEach(row => {
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
-            <td>${row.measurement_date}</td>
+            <td>${row.measurement_date.split(":")[0].slice(0, -3)}</td>
             <td>${row.height}</td>
             <td>${row.weight}</td>
             <td>${row.body_fat_percentage}</td>
@@ -248,7 +247,7 @@ document.getElementById("athlete-select").addEventListener("change", async funct
 
         tr.innerHTML = `
             <td>${row.doctor}</td>
-            <td>${row.date}</td>
+            <td>${row.date.split(":")[0].slice(0, -3)}</td>
             <td>${row.type}</td>
             <td>${row.notes}</td>
             <td>${row.clearance}</td>
@@ -302,7 +301,7 @@ document.getElementById("athlete-select").addEventListener("change", async funct
             <td>${row.percentage_sets_done}</td>
             <td>${row.percentage_reps_done}</td>
             <td>${row.average_rate_of_perceived_exertion}</td>
-            <td>${row.session_date}</td>
+            <td>${row.session_date.split(":")[0].slice(0, -3)}</td>
         `;
 
         tbody.appendChild(tr);
@@ -378,7 +377,7 @@ document.getElementById("athlete-select-medical").addEventListener("change", asy
 
         tr.innerHTML = `
             <td>${row.doctor}</td>
-            <td>${row.date}</td>
+            <td>${row.date.split(":")[0].slice(0, -3)}</td>
             <td>${row.type}</td>
             <td>${row.notes}</td>
             <td>${row.clearance}</td>
