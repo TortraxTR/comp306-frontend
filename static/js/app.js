@@ -118,6 +118,7 @@ function showDashboard(role) {
     const dashboardTitle = document.getElementById("dashboard-title");
 
     dashboardTitle.innerText = `Welcome, ${savedUser["first_name"]}!`;
+    
     const navMenu = document.getElementById('nav-menu');
     navMenu.innerHTML = '';
     let firstTabId = null;
@@ -202,6 +203,12 @@ document.getElementById("athlete-select").addEventListener("change", async funct
     const athleteId = this.value;
     const tbody = document.querySelector("#measurementTable tbody");
 
+    if (athleteId) {
+        document.getElementById("measurements").classList.remove("hidden");
+    } else {
+        document.getElementById("measurements").classList.add("hidden");
+    }
+
     tbody.innerHTML = "";
 
     if (!athleteId) return;
@@ -246,7 +253,6 @@ document.getElementById("athlete-select").addEventListener("change", async funct
             <td>${row.notes}</td>
             <td>${row.clearance}</td>
         `;
-
         tbody.appendChild(tr);
     });
 });
