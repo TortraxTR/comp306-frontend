@@ -5,11 +5,11 @@ Example Next.js App Router API route for training programs.
 
 Notes:
 - This route uses raw SQL queries via mysql2/promise connection pool
-- Enrollments are fetched separately and joined in memory to match Prisma's include behavior
+- Enrollments are fetched using a JOIN query for efficiency
 */
 
 import { NextResponse } from 'next/server';
-import { query } from '../../../lib/db';
+import { query, execute } from '../../../lib/db';
 
 // Types matching the database schema
 interface TrainingProgram {
@@ -30,38 +30,73 @@ interface ProgramEnrollment {
   completion_status: string | null;
 }
 
-interface InsertResult {
-  insertId: number;
-  affectedRows: number;
+interface ProgramWithEnrollmentRow {
+  program_id: number;
+  program_name: string;
+  difficulty_level: string | null;
+  goal: string | null;
+  start_date: Date | null;
+  end_date: Date | null;
+  created_by_trainer: number | null;
+  enrollment_athlete_id: number | null;
+  enrollment_program_id: number | null;
+  enrollment_date: Date | null;
+  completion_status: string | null;
 }
 
 // GET /api/trainingprograms
 export async function GET() {
   try {
-    // Fetch all training programs ordered by program_id
-    const programs = await query<TrainingProgram>(
-      'SELECT * FROM trainingprogram ORDER BY program_id ASC'
-    ) as TrainingProgram[];
+    // Fetch all training programs with their enrollments using a LEFT JOIN
+    const rows = await query<ProgramWithEnrollmentRow>(
+      `SELECT 
+        tp.program_id,
+        tp.program_name,
+        tp.difficulty_level,
+        tp.goal,
+        tp.start_date,
+        tp.end_date,
+        tp.created_by_trainer,
+        pe.athlete_id as enrollment_athlete_id,
+        pe.program_id as enrollment_program_id,
+        pe.enrollment_date,
+        pe.completion_status
+      FROM trainingprogram tp
+      LEFT JOIN programenrollment pe ON tp.program_id = pe.program_id
+      ORDER BY tp.program_id ASC`
+    );
 
-    // Fetch all program enrollments for enrichment
-    const enrollments = await query<ProgramEnrollment>(
-      'SELECT * FROM programenrollment'
-    ) as ProgramEnrollment[];
-
-    // Group enrollments by program_id
-    const enrollmentsByProgram = new Map<number, ProgramEnrollment[]>();
-    for (const enrollment of enrollments) {
-      const programEnrollments = enrollmentsByProgram.get(enrollment.program_id) || [];
-      programEnrollments.push(enrollment);
-      enrollmentsByProgram.set(enrollment.program_id, programEnrollments);
+    // Group rows by program_id and aggregate enrollments
+    const programsMap = new Map<number, TrainingProgram>();
+    
+    for (const row of rows) {
+      if (!programsMap.has(row.program_id)) {
+        programsMap.set(row.program_id, {
+          program_id: row.program_id,
+          program_name: row.program_name,
+          difficulty_level: row.difficulty_level,
+          goal: row.goal,
+          start_date: row.start_date,
+          end_date: row.end_date,
+          created_by_trainer: row.created_by_trainer,
+          programenrollment: [],
+        });
+      }
+      
+      const program = programsMap.get(row.program_id)!;
+      
+      // Add enrollment if it exists (LEFT JOIN may produce null values)
+      if (row.enrollment_athlete_id !== null) {
+        program.programenrollment!.push({
+          athlete_id: row.enrollment_athlete_id,
+          program_id: row.enrollment_program_id!,
+          enrollment_date: row.enrollment_date,
+          completion_status: row.completion_status,
+        });
+      }
     }
 
-    // Enrich programs with their enrollments
-    const enrichedPrograms = programs.map(program => ({
-      ...program,
-      programenrollment: enrollmentsByProgram.get(program.program_id) || [],
-    }));
-
+    const enrichedPrograms = Array.from(programsMap.values());
     return NextResponse.json(enrichedPrograms);
   } catch (error) {
     // Log the error server-side for debugging
@@ -88,19 +123,19 @@ export async function POST(req: Request) {
     const created_by_trainer = body.created_by_trainer ?? null;
 
     // Insert the new training program
-    const result = await query(
+    const result = await execute(
       `INSERT INTO trainingprogram 
        (program_name, difficulty_level, goal, start_date, end_date, created_by_trainer) 
        VALUES (?, ?, ?, ?, ?, ?)`,
       [program_name, difficulty_level, goal, start_date, end_date, created_by_trainer]
-    ) as InsertResult;
+    );
 
     // Fetch the created record to return it (mimicking Prisma's behavior)
     const insertId = result.insertId;
     const created = await query<TrainingProgram>(
       'SELECT * FROM trainingprogram WHERE program_id = ?',
       [insertId]
-    ) as TrainingProgram[];
+    );
 
     if (created.length === 0) {
       throw new Error('Failed to retrieve created training program');

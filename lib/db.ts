@@ -12,19 +12,21 @@ let pool: mysql.Pool | null = null;
  * Returns connection config object.
  */
 function parseDatabaseUrl(url: string) {
-  const match = url.match(/^mysql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)$/);
-  if (!match) {
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.protocol !== 'mysql:') {
+      throw new Error('URL must use mysql: protocol');
+    }
+    return {
+      host: urlObj.hostname,
+      port: urlObj.port ? parseInt(urlObj.port, 10) : 3306,
+      user: decodeURIComponent(urlObj.username),
+      password: decodeURIComponent(urlObj.password),
+      database: urlObj.pathname.slice(1), // Remove leading slash
+    };
+  } catch {
     throw new Error('Invalid DATABASE_URL format. Expected: mysql://user:password@host:port/database');
   }
-  
-  const [, user, password, host, port, database] = match;
-  return {
-    host,
-    port: parseInt(port, 10),
-    user,
-    password,
-    database,
-  };
 }
 
 /**
@@ -65,21 +67,30 @@ export function getPool(): mysql.Pool {
   return pool;
 }
 
-interface QueryResult {
-  insertId?: number;
-}
-
 /**
- * Execute a query with parameters.
- * Returns rows and fields from the query result.
+ * Execute a SELECT query with parameters.
+ * Returns an array of rows.
  */
 export async function query<T = unknown>(
   sql: string,
   params?: unknown[]
-): Promise<T[] | QueryResult> {
+): Promise<T[]> {
   const pool = getPool();
   const [rows] = await pool.execute(sql, params);
-  return rows as T[] | QueryResult;
+  return rows as T[];
+}
+
+/**
+ * Execute an INSERT/UPDATE/DELETE query with parameters.
+ * Returns the result metadata including insertId and affectedRows.
+ */
+export async function execute(
+  sql: string,
+  params?: unknown[]
+): Promise<mysql.ResultSetHeader> {
+  const pool = getPool();
+  const [result] = await pool.execute(sql, params);
+  return result as mysql.ResultSetHeader;
 }
 
 /**
@@ -93,5 +104,5 @@ export async function closePool(): Promise<void> {
   }
 }
 
-const dbExports = { getPool, query, closePool };
+const dbExports = { getPool, query, execute, closePool };
 export default dbExports;
