@@ -115,9 +115,11 @@ function logout() {
 }
 
 function showDashboard(role) {
+    const dashboardTitle = document.getElementById("dashboard-title");
+
+    dashboardTitle.innerText = `Welcome, ${savedUser["first_name"]}!`;
     const navMenu = document.getElementById('nav-menu');
     navMenu.innerHTML = '';
-
     let firstTabId = null;
 
     TABS.forEach(tab => {

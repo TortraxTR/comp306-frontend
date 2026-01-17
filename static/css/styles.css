@@ -24,3 +24,11 @@ button:hover { background: #0056b3; }
     background: #fff;
     z-index: 1;
 }
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
