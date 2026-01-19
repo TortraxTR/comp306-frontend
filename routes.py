@@ -117,7 +117,7 @@ def get_lastTraining(cursor, athlete_id):
         SELECT *
         FROM x
         WHERE rn = 1 AND athlete_id = %s
-        ORDER BY athlete_id, exercise_id;
+        ORDER BY log_time DESC;
     """, (athlete_id,))
     rows = cursor.fetchall()
     return jsonify(rows)
