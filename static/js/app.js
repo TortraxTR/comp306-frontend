@@ -161,6 +161,7 @@ async function switchTab(tabId) {
 
     if (user.role == "athlete" && tabId === "enrollment") {
         await loadEnrolledPrograms(user.user_id);
+        await loadAvailablePrograms(user.user_id);
     }
 
 
@@ -185,7 +186,7 @@ document.getElementById("athlete-select").addEventListener("change", async funct
     if (!athleteId) return;
 
     try {   
-        const res = await fetch(`/api/athletePrograms/${athleteId}`);
+        const res = await fetch(`/api/athletePrograms/enrolled/${athleteId}`);
         if (!res.ok) return;
         const programs = await res.json();
         console.log('Enrolled programs:', programs);
@@ -538,7 +539,7 @@ async function loadEnrolledPrograms(athleteId) {
     }
 
     try {
-        const res = await fetch(`/api/athletePrograms/${athleteId}`);
+        const res = await fetch(`/api/athletePrograms/enrolled/${athleteId}`);
         if (!res.ok) {
             select.innerHTML = '<option value="">Failed to load</option>';
             return;
@@ -596,6 +597,42 @@ async function loadWorkoutSessions(programId) {
         });
     } catch (err) {
         console.error(err);
+    }
+}
+
+async function loadAvailablePrograms(athleteId) {
+    const select = document.getElementById('available-programs');
+    if (!select) return;
+    select.innerHTML = '<option value="">Loading...</option>';
+    if (!athleteId) {
+        select.innerHTML = '<option value="">No athlete selected</option>';
+        return;
+    }
+    try {
+        const res = await fetch(`/api/athletePrograms/notEnrolled/${athleteId}`);
+        if (!res.ok) {
+            select.innerHTML = '<option value="">Failed to load</option>';
+            return;
+        }
+        const programs = await res.json();
+        if (!Array.isArray(programs) || programs.length === 0) {
+            select.innerHTML = '<option value="">No available programs</option>';
+            return;
+        }
+        select.innerHTML = '<option value="">Select a program</option>';
+        programs.forEach(p => {
+            const id = p.program_id;
+            const name = p.program_name;
+            const start = p.start_date.split(":")[0].slice(0, -3);
+            const end = p.end_date.split(":")[0].slice(0, -3);
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = `${name}: (${start} - ${end})`;
+            select.appendChild(option);
+        });
+    } catch (err) {
+        console.error(err);
+        select.innerHTML = '<option value="">Error loading programs</option>';
     }
 }
 
