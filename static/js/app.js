@@ -616,14 +616,16 @@ async function loadAthletesInPrograms(trainer_id) {
     select.innerHTML = '<option value="">Select an athlete</option>';
     athletes.forEach(a => {
         const option = document.createElement('option');
-        option.value = a.id;
-        option.textContent = a.name;
+        option.value = a.user_id;
+        console.log(option.value);
+        option.textContent = a.first_name + " " + a.last_name;
         select.appendChild(option);
     });
 }
 
 document.getElementById('athlete-feedback-select').addEventListener('change', async function () {
     const athleteId = this.value;
+    console.log('Selected athlete ID for feedback:', athleteId);
     const trainerId = savedUser.user_id;
     await loadWorkoutSessionsForAthlete(athleteId, trainerId);
 });
@@ -675,7 +677,7 @@ async function submitTrainerFeedback() {
     }
 }
 
-document.getElementById('submit-feedback-btn').addEventListener('click', async (e) => {
+document.getElementById('add-feedback-btn').addEventListener('click', async (e) => {
     e.preventDefault();
     await submitTrainerFeedback();
 });

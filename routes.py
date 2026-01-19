@@ -293,35 +293,33 @@ def get_workout_sessions(cursor, program_id):
 @connect_first
 def get_trainer_athletes(cursor, trainer_id):
     cursor.execute("""
-        SELECT DISTINCT
-            a.athlete_id AS id,
-            CONCAT(u.first_name, ' ', u.last_name) AS name
-        FROM athlete a
-        JOIN programenrollment pe ON a.athlete_id = pe.athlete_id
-        JOIN trainingprogram tp ON pe.program_id = tp.program_id
-        JOIN user u ON u.user_id = a.athlete_id
-        WHERE tp.created_by_trainer = %s
-        ORDER BY name
+    SELECT DISTINCT
+    u.user_id,
+    u.first_name,
+    u.last_name
+    FROM Athlete a
+    JOIN User u ON a.athlete_id = u.user_id
+    JOIN ProgramEnrollment pe ON a.athlete_id = pe.athlete_id
+    JOIN TrainingProgram tp ON pe.program_id = tp.program_id
+    JOIN WorkoutSession ws ON tp.program_id = ws.program_id
+    WHERE tp.created_by_trainer = %s;
     """, (trainer_id,))
     athletes = cursor.fetchall()
     return jsonify(athletes), 200
 
-@app.route('/api/workoutSessions/trainer/${trainerId}/athlete/${athleteId}', methods=['GET'])
+@app.route('/api/workoutSessions/trainer/<int:trainer_id>/athlete/<int:athlete_id>', methods=['GET'])
 @connect_first
-def get_athlete_workout_sessions(cursor, athleteId, trainerId):
+def get_athlete_workout_sessions(cursor, trainer_id, athlete_id):
     cursor.execute("""
-        SELECT DISTINCT 
-        ws.session_id, 
-        ws.session_date, 
-        ws.duration, 
-        ws.intensity_level,
-        tp.program_name
-        FROM WorkoutSession ws
-        JOIN TrainingProgram tp ON ws.program_id = tp.program_id
-        JOIN PerformanceLog pl ON ws.session_id = pl.session_id
-        WHERE pl.athlete_id = %s 
-        AND tp.created_by_trainer = %s
-    """, (athleteId, trainerId, ))
+        SELECT
+    ws.session_id,
+    ws.session_date,
+    ws.duration
+    FROM workoutsession ws
+    JOIN trainingprogram tp ON ws.program_id = tp.program_id
+    JOIN programenrollment pe ON tp.program_id = pe.program_id
+    WHERE pe.athlete_id = %s AND tp.created_by_trainer = %s;
+                   """, (athlete_id, trainer_id,))
     sessions = cursor.fetchall()
     return jsonify(sessions), 200
 
