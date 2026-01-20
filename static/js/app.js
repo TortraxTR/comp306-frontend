@@ -666,16 +666,24 @@ async function loadWorkoutSessionsForAthlete(athleteId, trainerId) {
 
 async function submitTrainerFeedback() {
     const athlete_id = document.getElementById('athlete-feedback-select').value;
-    const feedback_text = document.getElementById('trainer-feedback-text').value.trim();
+    const session_id = document.getElementById('workout-session-select').value; // <-- get session id
+    const comments = document.getElementById('feedback-notes').value.trim(); // <-- use correct textarea id
     const trainer_id = savedUser.user_id;
+    const rating = document.getElementById('feedback-rating').value;
     if (!athlete_id) {
         window.alert('Select an athlete.');
+        return;
+    }
+    if (!session_id) {
+        window.alert('Select a workout session.');
         return;
     }
     const payload = {
         athlete_id,
         trainer_id,
-        feedback_text
+        session_id,
+        comments,
+        rating
     };
     try {
         const res = await fetch('/api/addTrainerFeedback', {
@@ -687,7 +695,9 @@ async function submitTrainerFeedback() {
             const data = await res.json().catch(() => ({}));
             window.alert(data.message || 'Feedback submitted.');
             document.getElementById('athlete-feedback-select').value = '';
-            document.getElementById('trainer-feedback-text').value = '';
+            document.getElementById('feedback-notes').value = '';
+            document.getElementById('workout-session-select').innerHTML = '<option value="">Select a session</option>';
+            document.getElementById('feedback-rating').value = '5';
         } else {
             const err = await res.json().catch(() => ({}));
             window.alert(err.message || err.error || 'Failed to submit feedback.');

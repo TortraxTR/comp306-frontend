@@ -323,25 +323,22 @@ def get_athlete_workout_sessions(cursor, trainer_id, athlete_id):
     sessions = cursor.fetchall()
     return jsonify(sessions), 200
 
-@app.route("/api/trainerFeedback", methods=["POST"])
+@app.route("/api/addTrainerFeedback", methods=["POST"])
 @connect_first
 def add_trainer_feedback(cursor):
     data = request.get_json()
     athlete_id = data.get("athlete_id")
     trainer_id = data.get("trainer_id")
-    feedback_date = data.get("feedback_date")
+    session_id = data.get("session_id")
     comments = data.get("comments")
     rating = data.get("rating")
-
-    if not athlete_id or not trainer_id or not feedback_date:
-        return jsonify({"error": "Missing parameters"}), 400
-
+    
     sql = """
         INSERT INTO trainerfeedback
-        (athlete_id, trainer_id, feedback_date, comments, rating)
+        (athlete_id, trainer_id, session_id, comments, rating)
         VALUES (%s, %s , %s, %s, %s)
     """
-    cursor.execute(sql, (athlete_id, trainer_id, feedback_date, comments, rating))
+    cursor.execute(sql, (athlete_id, trainer_id, session_id, comments, rating))
     return jsonify({"message": "Trainer feedback added successfully"}), 201
 
 
