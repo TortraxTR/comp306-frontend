@@ -548,7 +548,6 @@ document.getElementById('create-program-btn').addEventListener('click', async (e
         if (res.ok) {
             const data = await res.json().catch(() => ({}));
             window.alert(data.message || 'Training program created.');
-            // clear form
             document.getElementById('training_program_name').value = '';
             document.getElementById('training_program_goal').value = '';
             document.getElementById('training_program_start_date').value = '';
@@ -561,6 +560,8 @@ document.getElementById('create-program-btn').addEventListener('click', async (e
     } catch (err) {
         console.error(err);
         window.alert('Network error while creating program.');
+    } finally {
+        location.reload();
     }
 });
 
