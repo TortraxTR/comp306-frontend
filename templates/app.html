@@ -261,31 +261,32 @@
 
             <div id="content-management" class="tab-content hidden">
                 <h3>Training Program Management</h3>
-                <button onclick="toggleView('create-program-form')">Create New Program</button>
-                <button onclick="toggleView('add-workout-session-form')">Add Workout Session</button>
-                <button onclick="toggleView('add-trainer-feedback-form')">Add Trainer Feedback</button>
+                <button id="create-program-button">Create New Program</button>
+                <button id="add-workout-session-button">Add Workout Session</button>
+                <button id="add-trainer-feedback-button">Add Trainer Feedback</button>
+                
                 <div id="create-program-form" class="hidden">
                     <h4>Create New Program</h4>
                     
                     <label>Program Name</label>
                     <input id="training_program_name" type="text"/>
 
-                <label>Difficulty Level</label>
-                <select id="training_program_difficulty">
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advenced</option>
-                </select>
+                    <label>Difficulty Level</label>
+                    <select id="training_program_difficulty">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advenced</option>
+                    </select>
 
-                <label>Goal</label><br/>
-                <textarea id="training_program_goal"></textarea>
-                <br/>
+                    <label>Goal</label><br/>
+                    <textarea id="training_program_goal"></textarea>
+                    <br/>
 
-                <label>Start Date</label>
-                <input type="date" id="training_program_start_date"/>
+                    <label>Start Date</label>
+                    <input type="date" id="training_program_start_date"/>
 
-                <label>End Date</label>
-                <input type="date" id="training_program_end_date">
+                    <label>End Date</label>
+                    <input type="date" id="training_program_end_date">
 
                     <button id="create-program-btn">Create</button>
                 </div>

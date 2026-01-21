@@ -43,6 +43,31 @@ function toggleAccordion(header) {
     }
 }
 
+const managementForms = [
+    'create-program-form',
+    'add-workout-session-form',
+    'add-trainer-feedback-form'
+];
+
+function showOnlyManagementForm(formId) {
+    managementForms.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    const target = document.getElementById(formId);
+    if (target) target.classList.remove('hidden');
+}
+
+document.getElementById('create-program-button').addEventListener('click', () => {
+    showOnlyManagementForm('create-program-form');
+});
+document.getElementById('add-workout-session-button').addEventListener('click', () => {
+    showOnlyManagementForm('add-workout-session-form');
+});
+document.getElementById('add-trainer-feedback-button').addEventListener('click', () => {
+    showOnlyManagementForm('add-trainer-feedback-form');
+});
+
 function toggleView(view_id) {
     const view = document.getElementById(view_id);
     if (view.classList.contains('hidden')) {
