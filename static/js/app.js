@@ -851,7 +851,7 @@ async function loadEnrolledPrograms(athleteId) {
     }
 
     try {
-        const res = await fetch(`/api/athletePrograms/${athleteId}`);
+        const res = await fetch(`/api/athletePrograms/enrolled/${athleteId}`);
         if (!res.ok) {
             select.innerHTML = '<option value="">Failed to load</option>';
             return;
