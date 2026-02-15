@@ -553,7 +553,6 @@ document.getElementById('create-program-btn').addEventListener('click', async (e
             document.getElementById('training_program_start_date').value = '';
             document.getElementById('training_program_end_date').value = '';
             document.getElementById('training_program_difficulty').value = 'beginner';
-            location.reload();
         } else {
             const err = await res.json().catch(() => ({}));
             window.alert(err.message || err.error || 'Failed to create program.');
@@ -608,7 +607,6 @@ async function submitWorkoutSession() {
             document.getElementById('session-date').value = '';
             document.getElementById('session-duration').value = '';
             document.getElementById('session-intensity').value = 'medium';
-            location.reload();
         } else {
             const err = await res.json().catch(() => ({}));
             window.alert(err.message || err.error || 'Failed to add session.');
@@ -713,7 +711,6 @@ async function submitTrainerFeedback() {
             document.getElementById('feedback-notes').value = '';
             document.getElementById('workout-session-select').innerHTML = '<option value="">Select a session</option>';
             document.getElementById('feedback-rating').value = '5';
-            location.reload();
         } else {
             const err = await res.json().catch(() => ({}));
             window.alert(err.message || err.error || 'Failed to submit feedback.');
@@ -819,7 +816,6 @@ async function submitMedicalExam() {
 
         const result = await response.json();
         alert(result.message);
-        location.reload();
     } else {
         window.alert("Select an athlete first.")
     }
@@ -934,7 +930,6 @@ async function enrollInProgram() {
             await loadAvailablePrograms(user.user_id);
             
             document.getElementById('available-programs').value = '';
-            location.reload();
         } else {
             const err = await res.json().catch(() => ({}));
             window.alert(err.message || err.error || 'Failed to enroll in program.');
